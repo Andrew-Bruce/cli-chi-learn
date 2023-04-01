@@ -10,10 +10,7 @@ import os
 from cedict_utils.cedict import CedictParser
 import pypinyin
 
-NUM_WORDS = 3
-
-
-
+NUM_WORDS = 20
 
 def get_random_entries(entries, seed):
     random.seed(seed)
@@ -25,7 +22,7 @@ def run_one_round(random_entries, seed):
     random.shuffle(shuffled_indexes)
     num_correct = 0
     for i, entry in enumerate(map(lambda index: random_entries[index], shuffled_indexes)):
-        #os.system('clear')
+        os.system('clear')
         word = entry.simplified
         pinyin_string = " ".join(map(pypinyin.contrib.tone_convert.to_tone, entry.pinyin.split()))
         list_of_meanings = entry.meanings
@@ -35,7 +32,11 @@ def run_one_round(random_entries, seed):
             print("correct")
             num_correct += 1
         else:
-            user_in = input(f"{word} ({pinyin_string}): {list_of_meanings}\n")
+            print(f"{word} ({pinyin_string}): {list_of_meanings}\n")
+            while True:
+                user_in = input(f"{word}\n")
+                if(user_in == word):
+                    break;
     return num_correct
 
 def run_one_set(random_entries, seed):
@@ -45,14 +46,14 @@ def run_one_set(random_entries, seed):
         num_correct = run_one_round(random_entries, seed)
         print(f"{num_correct} correct")
         print("=========================")
-        if(num_correct == NUM_WORDS):
+        if num_correct == NUM_WORDS:
             break
-        
+
 def main(argv):
     round_num = 0
     if len(argv) > 1:
         seed = int(sys.argv[1])
-        if(len(argv) > 2):
+        if len(argv) > 2:
             round_num = int(argv[2])
     else:
         seed = None
@@ -60,7 +61,7 @@ def main(argv):
     parser = CedictParser()
     parser.read_file("cedict_1_0_ts_utf-8_mdbg.txt")
     entries = parser.parse()
-    for i in range(0, round_num):
+    for _ in range(0, round_num):
         _ = random.randbytes(32)
     while True:
         seed = random.randbytes(32)
